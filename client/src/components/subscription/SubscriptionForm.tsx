@@ -19,6 +19,12 @@ export default function SubscriptionForm() {
       setIsLoading(false);
     } else {
       setIsLoading(true);
+      // Check if the Stripe key is missing
+      if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+        setErrorMessage('Payment system is temporarily unavailable. Please try again later or contact support.');
+        return;
+      }
+      
       // Display error after a timeout if Stripe is still not loaded
       const timer = setTimeout(() => {
         if (!stripe || !elements) {

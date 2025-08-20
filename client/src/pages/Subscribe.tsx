@@ -15,7 +15,7 @@ try {
   if (import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
     stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
   } else {
-    console.error('Missing VITE_STRIPE_PUBLIC_KEY environment variable');
+    console.warn('Missing VITE_STRIPE_PUBLIC_KEY environment variable. Stripe payments will not work.');
   }
 } catch (error) {
   console.error('Error loading Stripe:', error);
@@ -120,6 +120,26 @@ export default function SubscribePage() {
 
   if (!user) {
     return <Redirect to="/auth" />;
+  }
+
+  // Check if Stripe is properly initialized
+  if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+    return (
+      <div className="container max-w-6xl mx-auto py-12 px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight">Upgrade Your Experience</h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Choose the plan that's right for you and get access to premium features
+          </p>
+        </div>
+        <div className="max-w-2xl mx-auto p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h2 className="text-xl font-semibold text-yellow-800 mb-2">Payment System Temporarily Unavailable</h2>
+          <p className="text-gray-700">
+            Our payment system is currently being configured. Please try again later or contact support for assistance.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

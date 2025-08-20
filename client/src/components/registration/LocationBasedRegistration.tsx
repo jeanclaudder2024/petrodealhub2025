@@ -47,6 +47,11 @@ import {
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
 
+// Check if Stripe is properly initialized
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  console.warn('Missing VITE_STRIPE_PUBLIC_KEY environment variable. Stripe payments will not work.');
+}
+
 interface Port {
   id: number;
   name: string;

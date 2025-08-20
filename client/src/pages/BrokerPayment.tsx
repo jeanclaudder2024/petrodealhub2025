@@ -7,7 +7,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 import { CheckCircle, Ship, DollarSign, Users, Globe, Shield, CreditCard } from 'lucide-react';
 
+// Initialize Stripe with public key from environment variables
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
+
+// Check if Stripe is properly initialized
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  console.warn('Missing VITE_STRIPE_PUBLIC_KEY environment variable. Stripe payments will not work.');
+}
 
 const PaymentForm = () => {
   const stripe = useStripe();
@@ -223,6 +229,25 @@ const PaymentForm = () => {
 };
 
 export default function BrokerPayment() {
+  // Prevent rendering Elements with an invalid Stripe instance
+  if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">
+            PetroDealHub Broker Membership
+          </h1>
+          <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h2 className="text-xl font-semibold text-yellow-800 mb-2">Payment System Temporarily Unavailable</h2>
+            <p className="text-gray-700">
+              Our payment system is currently being configured. Please try again later or contact support for assistance.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <Elements stripe={stripePromise}>
       <PaymentForm />
