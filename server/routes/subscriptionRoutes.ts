@@ -3,9 +3,18 @@ import { storage } from "../storage";
 import { authenticateToken } from "../auth";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
-});
+let stripe: Stripe | null = null;
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn('STRIPE_SECRET_KEY not provided. Stripe functionality will be disabled.');
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+    });
+  }
+} catch (error) {
+  console.error('Failed to initialize Stripe:', error);
+}
 
 export function registerSubscriptionRoutes(app: Express) {
   // Get current subscription

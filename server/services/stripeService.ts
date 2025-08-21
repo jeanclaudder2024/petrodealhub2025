@@ -1,12 +1,18 @@
 import Stripe from 'stripe';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
+let stripe: Stripe | null = null;
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-06-20',
-});
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn('Missing required Stripe secret: STRIPE_SECRET_KEY. Stripe functionality will be disabled.');
+  } else {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+    });
+  }
+} catch (error) {
+  console.error('Failed to initialize Stripe:', error);
+}
 
 interface CreateCheckoutSessionOptions {
   planId: number;
@@ -19,7 +25,11 @@ interface CreateCheckoutSessionOptions {
 
 export const stripeService = {
   // Create a checkout session for subscription
-  async createCheckoutSession(options: CreateCheckoutSessionOptions): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession(options: CreateCheckoutSessionOptions): Promise<Stripe.Checkout.Session | null> {
+    if (!stripe) {
+      console.warn('Stripe is not initialized. Cannot create checkout session.');
+      return null;
+    }
     const { planId, userId, userEmail, interval, successUrl, cancelUrl } = options;
     
     // Use dynamic pricing instead of fixed Stripe price IDs for demo/development

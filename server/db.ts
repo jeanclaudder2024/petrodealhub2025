@@ -1,35 +1,15 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
 import * as schema from "@shared/schema";
 
-// Get database URL from environment
-const DATABASE_URL = process.env.DATABASE_URL;
+console.log('Initializing development database with SQLite...');
 
-if (!DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable must be set");
-}
+// For development, use SQLite instead of PostgreSQL
+const sqlite = new Database('dev.db');
 
-console.log('Connecting to database...');
+export const db = drizzle(sqlite, { schema });
 
-// Fix the DATABASE_URL by properly encoding special characters
-let fixedUrl = DATABASE_URL;
-// The password contains [Jonny@2025@] which needs to be URL encoded
-if (fixedUrl.includes('[Jonny@2025@]')) {
-  fixedUrl = fixedUrl.replace('[Jonny@2025@]', encodeURIComponent('Jonny@2025@'));
-}
-
-// Create PostgreSQL connection with proper SSL configuration for Supabase
-const sql = postgres(fixedUrl, {
-  ssl: { rejectUnauthorized: false },
-  max: 20,
-  idle_timeout: 20,
-  connect_timeout: 10,
-  prepare: false,
-});
-
-export const db = drizzle(sql, { schema });
-
-console.log('Connected to Supabase database');
+console.log('Connected to SQLite database');
 
 export function getActiveDb() {
   return db;

@@ -2,7 +2,17 @@ import OpenAI from "openai";
 import { Vessel, Port, Refinery } from "@shared/schema";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let openai: OpenAI | null = null;
+
+try {
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn('OPENAI_API_KEY not provided. AI enhancement functionality will be disabled.');
+  } else {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+} catch (error) {
+  console.error('Failed to initialize OpenAI:', error);
+}
 
 // Service to enhance maritime data with AI-generated details
 export class AIEnhancementService {

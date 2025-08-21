@@ -1,0 +1,25 @@
+{
+  "name": "@petrodealhub/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+    "build": "esbuild src/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@petrodealhub/shared": "file:../shared",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.7",
+    "esbuild": "^0.19.2",
+    "tsx": "^4.4.0",
+    "typescript": "^5.2.2"
+  }
+}

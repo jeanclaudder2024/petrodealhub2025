@@ -718,6 +718,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
     
+    // Route to seed data
+    apiRouter.post("/seed", async (req, res) => {
+      try {
+        console.log("Starting database seeding process...");
+        const seedResult = await seedAllData();
+        console.log("Database seeded successfully:", seedResult);
+        
+        res.json({
+          success: true,
+          message: "Database seeded successfully",
+          data: seedResult
+        });
+      } catch (error) {
+        console.error("Error seeding database:", error);
+        res.status(500).json({ 
+          success: false, 
+          message: "Failed to seed database",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    });
+    
 
 
     // Public refinery creation endpoint (no auth required for testing)
